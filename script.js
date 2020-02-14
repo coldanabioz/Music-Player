@@ -9,6 +9,9 @@ const progressContainer = document.getElementById('progress-container');
 const title = document.getElementById('title');
 const cover = document.getElementById('cover');
 
+const logo = document.getElementById("logo");
+
+let context, analyser, src, array;
 
 // Song titles
 const songs = ['Dance With the Dead - Blind', 'Five Finger Death Punch - Wrong side of heaven', 'Krokus - Hoodoo Woman'];
@@ -98,6 +101,41 @@ playBtn.addEventListener('click', () => {
   
 });
 
+//Probable connecting spot
+function mooving(context){
+  if(!context){
+      preparation();
+  }
+  if(audio.paused){
+      audio.play();
+      loop();
+  }else{
+      audio.pause();
+  }
+}
+
+//Creating analyzer
+function preparation(){
+  context = new AudioContext();
+  analyser = context.createAnalyser();
+  src = context.createMediaElementSource(audio);
+  src.connect(analyser);
+  analyser.connect(context.destination);
+  loop();
+}
+
+//Frequency range
+function loop(){
+  if(!audio.paused){
+      mooving.requestAnimationFrame(loop);
+  }
+  array = new Uint8Array(analyser.frequencyBinCount);
+  analyser.getByteFrequencyData(array);
+
+  logo.minHeight = (array[40])+"px";
+  logo.width =  (array[40])+"px";
+}
+
 // Change song
 prevBtn.addEventListener('click', prevSong);
 nextBtn.addEventListener('click', nextSong);
@@ -110,40 +148,3 @@ progressContainer.addEventListener('click', setProgress);
 
 // Song ends
 audio.addEventListener('ended', nextSong);
-
-
-// const logo = document.getElementById("logo");
-
-// let context, analyser, src, array;
-
-// function mooving(song){
-//     if(!context){
-//         preparation();
-//     }
-//     if(audio.paused){
-//         audio.play();
-//         loop();
-//     }else{
-//         audio.pause();
-//     }
-// }
-
-// function preparation(){
-//     context = new AudioContext();
-//     analyser = context.createAnalyser();
-//     src = context.createMediaElementSource(audio);
-//     src.connect(analyser);
-//     analyser.connect(context.destination);
-//     loop();
-// }
-
-// function loop(){
-//     if(!audio.paused){
-//         window.requestAnimationFrame(loop);
-//     }
-//     array = new Uint8Array(analyser.frequencyBinCount);
-//     analyser.getByteFrequencyData(array);
-
-//     logo.minHeight = (array[40])+"px";
-//     logo.width =  (array[40])+"px";
-// }
